@@ -1,14 +1,10 @@
 <?php
-
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('dashboard');
-});
-
-Route::get('/admin', function () {
-    return view('admin.home');
 });
 
 Route::get('/dashboard', function () {
@@ -22,3 +18,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
