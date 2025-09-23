@@ -35,13 +35,13 @@
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="forms-elements.html">
-              <i class="bi bi-circle"></i><span>Form Elements</span>
+            <a href="{{ route('categories.index') }}">
+              <i class="bi bi-circle"></i><span>Danh mục sự kiện</span>
             </a>
           </li>
           <li>
-            <a href="forms-layouts.html">
-              <i class="bi bi-circle"></i><span>Form Layouts</span>
+            <a href="{{ route('events.index') }}">
+              <i class="bi bi-circle"></i><span>Các sự kiện</span>
             </a>
           </li>
           <li>

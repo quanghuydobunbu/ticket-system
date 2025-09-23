@@ -38,6 +38,10 @@
                     <label for="role_id" class="form-label fw-bold">Vai trò</label>
                     <select disabled class="form-select form-select-lg mb-3" name="role_id_display" id="role_id_display" aria-label="Chọn vai trò">
                       <option value="">-- Chọn vai trò --</option>
+
+                      
+
+
                       @foreach ($list_roles as $role)
                         <option value="{{ $role->id }}" {{ $role->id == $role_id ? 'selected' : '' }}>{{ $role->description }}</option>
                       @endforeach
