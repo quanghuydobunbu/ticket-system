@@ -3,187 +3,215 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
-use App\Models\User;
-use App\Models\UserRole;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $query = User::with('role');
-        
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('email', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('is_active', $request->status);
-        }
+    protected UserService $userService;
 
-        $users = $query->paginate(4);
-        
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    /**
+     * Display a listing of users with filters
+     */
+    public function index(Request $request): View
+    {
+        $filters = [
+            'search' => $request->get('search'),
+            'status' => $request->get('status')
+        ];
+
+        $users = $this->userService->getUsersWithFilters($filters, 4);
         $users->appends($request->query());
         
-        $roles = Role::all();
-        
-        return view('admin.user.index')
-            ->with('users', $users)
-            ->with('roles', $roles)
-            ->with('request', $request); 
+        $roles = $this->userService->getAllRoles();
+
+        return view('admin.user.index', compact('users', 'roles', 'request'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new user
      */
-    public function create()
+    public function create(): View
     {
-        $roles = Role::all();
-        return view('admin.user.add')->with('roles', $roles);
+        $roles = $this->userService->getAllRoles();
+        return view('admin.user.add', compact('roles'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user in storage
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'email' => 'required|unique:users', 
-            'phone' => 'required', 
-            'full_name' => 'required', 
-            'password' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20',
+            'full_name' => 'required|string|max:255',
+            'password' => 'required|string|min:6',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required',
-            'role' => 'nullable'
-        ],[
-            'email.required' => 'Email không được để trống',
-            'email.unique' => 'Email đã được sử dụng',
-            'phone.required' => 'Số điện thoại không được để trống',
-            'full_name.required' => 'Tên người dùng không được để trống',
-            'password.required' => 'Mật khẩu không được để trống',
-            'avatar.max' => 'Ảnh không được vượt quá 2MB'
+            'status' => 'required|boolean',
+            'role' => 'nullable|exists:roles,id'
         ]);
 
-        $user = User::create([
-            'name' => $validated['full_name'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+        try {
+            $this->userService->createUser(array_merge($validated, [
+                'avatar' => $request->file('avatar')
+            ]));
 
-        // $user_has_role = UserRole::findOrFail($id);
+            return redirect()->route('users.index')
+                ->with('success', 'User created successfully!');
 
-        if(isset($request->status)){
-            $user->is_active = $request->status == 1 ? 1 : 0;
-            $user->is_verified = $request->status == 1 ? 1 : 0;
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create user: ' . $e->getMessage());
         }
-
-        $userId = $user->id;
-
-        if($request->hasFile('avatar')){
-            $avatarName = time(). '.' . $request->avatar->extension();
-            $request->avatar->storeAs('avatars', $avatarName, 'public');
-            $user->avatar_url = $avatarName;
-        }
-
-        UserRole::create([
-            'user_id' => $userId,
-            'role_id' => $validated['role'],
-            'granted_at' => now()
-        ]);
-
-        $user->save();
-
-        return redirect()->route('users.index');
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user
      */
-    public function show(string $id)
+    public function show(string $id): View|RedirectResponse
     {
-        $user = User::find($id);
-        return view('admin.user.detail')->with('user', $user);
+        $user = $this->userService->findUser((int)$id);
+
+        if (!$user) {
+            return redirect()->route('users.index')
+                ->with('error', 'User not found!');
+        }
+
+        return view('admin.user.detail', compact('user'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified user
      */
-    public function edit(string $id)
+    public function edit(string $id): View|RedirectResponse
     {
-        $user = User::find($id);
-        $roles = Role::all();
-        return view('admin.user.edit')
-        ->with('user', $user)
-        ->with('roles', $roles);
+        $user = $this->userService->findUser((int)$id);
+
+        if (!$user) {
+            return redirect()->route('users.index')
+                ->with('error', 'User not found!');
+        }
+
+        $roles = $this->userService->getAllRoles();
+        
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Update the specified user in storage
+     */
+    public function update(Request $request, string $id): RedirectResponse
+    {
+        $user = $this->userService->findUser((int)$id);
+
+        if (!$user) {
+            return redirect()->route('users.index')
+                ->with('error', 'User not found!');
+        }
+
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $id,
+            'full_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required|boolean',
+            'role' => 'nullable|exists:roles,id'
+        ]);
+
+        try {
+            $this->userService->updateUser($user, array_merge($validated, [
+                'avatar' => $request->file('avatar')
+            ]));
+
+            return redirect()->route('users.index')
+                ->with('success', 'User updated successfully!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update user: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified user from storage
+     */
+    public function destroy(string $id): RedirectResponse
+    {
+        try {
+            $deleted = $this->userService->deleteUser((int)$id);
+
+            if ($deleted) {
+                return redirect()->route('users.index')
+                    ->with('success', 'User deleted successfully!');
+            } else {
+                return redirect()->route('users.index')
+                    ->with('error', 'User not found or cannot be deleted!');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')
+                ->with('error', 'Failed to delete user: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk actions for users (optional enhancement)
+     */
+    public function bulkAction(Request $request): RedirectResponse
     {
         $request->validate([
-            'email' => 'required', 
-            'full_name' => 'required', 
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required'
-        ],[
-            'email.required' => 'Email không được để trống',
-            'email.unique' => 'Email đã được sử dụng',
-            'full_name.required' => 'Tên người dùng không được để trống',
-            'avatar.max' => 'Ảnh không được vượt quá 2MB'
+            'action' => 'required|in:activate,deactivate,delete',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
         ]);
 
-        $user = User::findOrFail($id);
-        $user->name = $request->full_name;
-        $user->email = $request->email;
-        $user->phone= $request->phone;
+        $action = $request->get('action');
+        $userIds = $request->get('user_ids');
+        $count = 0;
 
-        if(isset($request->status)){
-            $user->is_active = $request->status == 1 ? 1 : 0;
-        }
+        try {
+            foreach ($userIds as $userId) {
+                $user = $this->userService->findUser((int)$userId);
+                if (!$user) continue;
 
-        if(isset($request->passworod)){
-            $user->password = $request->password;
-        }
-
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar_url && file_exists(storage_path('app/public/avatars/' . $user->avatar_url))) {
-                unlink(storage_path('app/public/avatars/' . $user->avatar_url));
+                switch ($action) {
+                    case 'activate':
+                        $this->userService->updateUser($user, ['status' => 1]);
+                        $count++;
+                        break;
+                    case 'deactivate':
+                        $this->userService->updateUser($user, ['status' => 0]);
+                        $count++;
+                        break;
+                    case 'delete':
+                        if ($this->userService->deleteUser((int)$userId)) {
+                            $count++;
+                        }
+                        break;
+                }
             }
-            
-            $avatar = $request->file('avatar');
-            $filename = time() . '_' . uniqid() . '.' . $avatar->getClientOriginalExtension();
-            $avatar->storeAs('avatars', $filename, 'public');
-            
-            $user->avatar_url = $filename;
+
+            $message = match($action) {
+                'activate' => "Activated {$count} users successfully!",
+                'deactivate' => "Deactivated {$count} users successfully!",
+                'delete' => "Deleted {$count} users successfully!",
+            };
+
+            return redirect()->route('users.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')
+                ->with('error', 'Bulk action failed: ' . $e->getMessage());
         }
-
-        $userId = $user->id;
-
-        UserRole::updateOrCreate(
-            ['user_id' => $userId], 
-            ['role_id' => $request->role] 
-        );
-
-        $user->save();
-        return redirect()->route('users.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $user = User::find($id);
-        $user->delete();
-        return redirect()->route('users.index');
     }
 }

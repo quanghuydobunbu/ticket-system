@@ -22,7 +22,6 @@ class ApiRolePermissionController extends Controller
         }
 
         try {
-            // Lấy danh sách permission_id của role này
             $permissions = RolePermission::where('role_id', $role_id)
                 ->pluck('permission_id')
                 ->toArray();
