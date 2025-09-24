@@ -4,16 +4,25 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Services\EventService;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $eventService;
+    public function __construct(EventService $eventService){
+        $this->eventService = $eventService;
+    }
+    public function index(Request $request)
     {
-        $events = Event::all();
+        $filters = [
+            'search' => $request->get('search'),
+            'status' => $request->get('status')
+        ];
+
+        $events = $this->eventService->getEventsWithFilters($filters, 6);
+        $events->appends($request->query());
+        // $events = $this->eventService->getAllEvent();
         return view('admin.event.index')->with('events', $events);
     }
 
@@ -22,7 +31,9 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+        $organizers = $this->eventService->getAllOrganizer();
+        $categories = $this->eventService->getAllCategory();
+        return view('admin.event.create')->with('categories', $categories)->with('organizers', $organizers);
     }
 
     /**
@@ -30,7 +41,32 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'organizer_id' => 'required|exists:users,id',
+            'category_id' => 'required|exists:categories,id',
+            'venue_id' => 'nullable|exists:venues,id',
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|unique:events,slug',
+            'description' => 'nullable|string',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'nullable|date|after:start_datetime',
+            'registration_end' => 'nullable|date|before:start_datetime',
+            'max_attendees' => 'nullable|integer|min:1',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required',
+            'is_featured' => 'boolean',
+            'is_free' => 'boolean',
+        ]);
+        try {
+            $this->eventService->createEvent(array_merge($validated, [
+                'featured_image' => $request->file('featured_image')
+            ]));
+            return redirect()->route('events.index');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create user: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -38,7 +74,11 @@ class EventController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $event = $this->eventService->findEvent($id);
+        
+        if($event){
+            return view('admin.event.detail')->with('event', $event);
+        }
     }
 
     /**
@@ -46,7 +86,10 @@ class EventController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $event = $this->eventService->findEvent($id);
+        $organizers = $this->eventService->getAllOrganizer();
+        $categories = $this->eventService->getAllCategory();
+        return view('admin.event.edit')->with('event', $event)->with('organizers', $organizers)->with('categories', $categories);
     }
 
     /**
@@ -54,7 +97,37 @@ class EventController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $event = $this->eventService->findEvent($id);
+        if(!$event){
+            return redirect()->route('events.index')->with('error', 'Không tìm thấy sự kiện nào');
+        }
+        $validated = $request->validate([
+            'organizer_id' => 'required|exists:users,id',
+            'category_id' => 'required|exists:categories,id',
+            'venue_id' => 'nullable|exists:venues,id',
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string',
+            'description' => 'nullable|string',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'nullable|date|after:start_datetime',
+            'registration_end' => 'nullable|date|before:start_datetime',
+            'max_attendees' => 'nullable|integer|min:1',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required',
+            'is_featured' => 'boolean',
+            'is_free' => 'boolean',
+        ]);
+
+        try{
+            $this->eventService->updateEvent($event, array_merge($validated, [
+                'featured_image' => $request->file('featured_image')
+            ]));
+            return redirect()->route('events.index');
+        }catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update user: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -62,6 +135,9 @@ class EventController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $event = $this->eventService->deleteEvent($id);
+        if($event){
+            return redirect()->route('events.index');
+        }
     }
 }

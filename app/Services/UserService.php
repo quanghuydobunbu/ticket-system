@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class UserService
 {
-    protected UserRepositoryInterface $userRepository;
+    protected $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepository)
     {
@@ -54,7 +54,6 @@ class UserService
         $uploadedAvatarFileName = null;
 
         try {
-            // BƯỚC 1: Chuẩn bị dữ liệu user
             $userData = [
                 'name' => $data['full_name'],
                 'phone' => $data['phone'] ?? null,
@@ -62,28 +61,23 @@ class UserService
                 'password' => Hash::make($data['password']),
             ];
 
-            // BƯỚC 2: Xử lý trạng thái active/inactive
             if (isset($data['status'])) {
                 $isActive = ($data['status'] == 1);
                 $userData['is_active'] = $isActive ? 1 : 0;
                 $userData['is_verified'] = $isActive ? 1 : 0;
             }
 
-            // BƯỚC 3: Upload avatar (nếu có file)
             if (isset($data['avatar']) && $data['avatar'] instanceof UploadedFile) {
                 $uploadedAvatarFileName = $this->uploadAvatar($data['avatar']);
                 $userData['avatar_url'] = $uploadedAvatarFileName;
             }
 
-            // BƯỚC 4: Tạo user trong database
             $user = $this->userRepository->create($userData);
 
-            // BƯỚC 5: Gán role cho user (nếu có)
             if (isset($data['role']) && !empty($data['role'])) {
                 $this->userRepository->createUserRole($user->id, $data['role']);
             }
 
-            // Trả về user đã tạo thành công
             return $user;
 
         } catch (\Exception $e) {
@@ -101,18 +95,15 @@ class UserService
 
     public function updateUser(User $user, array $data): User
     {
-        // Lưu tên avatar cũ và mới
         $oldAvatarFileName = $user->avatar_url;
         $newAvatarFileName = null;
 
         try {
-            // BƯỚC 1: Chuẩn bị dữ liệu cập nhật
             $updateData = [
                 'name' => $data['full_name'],
                 'email' => $data['email'],
             ];
 
-            // BƯỚC 2: Xử lý các field tùy chọn
             if (isset($data['phone'])) {
                 $updateData['phone'] = $data['phone'];
             }
@@ -121,26 +112,21 @@ class UserService
                 $updateData['is_active'] = ($data['status'] == 1) ? 1 : 0;
             }
 
-            // BƯỚC 3: Cập nhật password (nếu có)
             if (!empty($data['password'])) {
                 $updateData['password'] = Hash::make($data['password']);
             }
 
-            // BƯỚC 4: Upload avatar mới (nếu có)
             if (isset($data['avatar']) && $data['avatar'] instanceof UploadedFile) {
                 $newAvatarFileName = $this->uploadAvatar($data['avatar']);
                 $updateData['avatar_url'] = $newAvatarFileName;
             }
 
-            // BƯỚC 5: Cập nhật user trong database
             $updatedUser = $this->userRepository->update($user, $updateData);
 
-            // BƯỚC 6: Nếu có avatar mới và cập nhật thành công, xóa avatar cũ
             if ($newAvatarFileName && $oldAvatarFileName) {
                 $this->deleteAvatar($oldAvatarFileName);
             }
 
-            // BƯỚC 7: Cập nhật role (nếu có)
             if (isset($data['role']) && !empty($data['role'])) {
                 $this->userRepository->updateOrCreateUserRole($updatedUser->id, $data['role']);
             }
@@ -190,12 +176,8 @@ class UserService
     private function uploadAvatar(UploadedFile $avatarFile): string
     {
         try {
-            // Tạo tên file unique
             $fileName = time() . '_' . uniqid() . '.' . $avatarFile->getClientOriginalExtension();
-            
-            // Lưu file vào storage/app/public/avatars
             $avatarFile->storeAs('avatars', $fileName, 'public');
-            
             return $fileName;
 
         } catch (\Exception $e) {
