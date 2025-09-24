@@ -1,12 +1,13 @@
-@extends('layouts/admin')
+@extends('layouts.admin')
 
 @section('content')
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">Tạo sự kiện mới</h5>
+        <h5 class="card-title">Chỉnh sửa sự kiện: {{ $event->title }}</h5>
         
-        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             <div class="row">
                 <div class="col-md-8">
                     <!-- Thông tin cơ bản -->
@@ -15,7 +16,7 @@
                             <div class="mt-3">
                                 <label for="title" class="form-label">Tên sự kiện <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('title') is-invalid @enderror" 
-                                       id="title" name="title" value="{{ old('title') }}">
+                                       id="title" name="title" value="{{ old('title', $event->title) }}" required>
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -24,7 +25,7 @@
                             <div class="mb-3">
                                 <label for="slug" class="form-label">Slug</label>
                                 <input type="text" class="form-control @error('slug') is-invalid @enderror" 
-                                       id="slug" name="slug" value="{{ old('slug') }}" 
+                                       id="slug" name="slug" value="{{ old('slug', $event->slug) }}" 
                                        placeholder="Tự động tạo từ tên sự kiện">
                                 @error('slug')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -34,22 +35,33 @@
                             <div class="mb-3">
                                 <label for="description" class="form-label">Mô tả sự kiện</label>
                                 <textarea class="form-control @error('description') is-invalid @enderror" 
-                                          id="description" name="description" rows="5">{{ old('description') }}</textarea>
+                                          id="description" name="description" rows="5">{{ old('description', $event->description) }}</textarea>
                                 @error('description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
-                                <label for="featured_image" class="form-label">Ảnh đại diện</label>
+                                <label for="featured_image" class="form-label">Ảnh nổi bật</label>
+                                
+                                @if($event->featured_image)
+                                    <div class="mb-2">
+                                        <img src="{{ asset('storage/events'. '/' . $event->featured_image) }}" 
+                                             alt="Current image" class="img-thumbnail" style="max-width: 200px;">
+                                        <div class="form-text">Ảnh hiện tại</div>
+                                    </div>
+                                @endif
+                                
                                 <input type="file" class="form-control @error('featured_image') is-invalid @enderror" 
                                        id="featured_image" name="featured_image" accept="image/*">
+                                <div class="form-text">Để trống nếu không muốn thay đổi ảnh</div>
                                 @error('featured_image')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
                     </div>
+
                     <!-- Thời gian -->
                     <div class="card mb-3">
                         <div class="card-header">
@@ -61,7 +73,8 @@
                                     <div class="mb-3">
                                         <label for="start_datetime" class="form-label">Thời gian bắt đầu <span class="text-danger">*</span></label>
                                         <input type="datetime-local" class="form-control @error('start_datetime') is-invalid @enderror" 
-                                               id="start_datetime" name="start_datetime" value="{{ old('start_datetime') }}" required>
+                                               id="start_datetime" name="start_datetime" 
+                                               value="{{ old('start_datetime', \Carbon\Carbon::parse($event->start_datetime)->format('Y-m-d\TH:i')) }}" required>
                                         @error('start_datetime')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -71,7 +84,8 @@
                                     <div class="mb-3">
                                         <label for="end_datetime" class="form-label">Thời gian kết thúc <span class="text-danger">*</span></label>
                                         <input type="datetime-local" class="form-control @error('end_datetime') is-invalid @enderror" 
-                                               id="end_datetime" name="end_datetime" value="{{ old('end_datetime') }}" required>
+                                               id="end_datetime" name="end_datetime" 
+                                               value="{{ old('end_datetime', \Carbon\Carbon::parse($event->end_datetime)->format('Y-m-d\TH:i')) }}" required>
                                         @error('end_datetime')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -82,7 +96,8 @@
                             <div class="mb-3">
                                 <label for="registration_end" class="form-label">Hạn đăng ký</label>
                                 <input type="datetime-local" class="form-control @error('registration_end') is-invalid @enderror" 
-                                       id="registration_end" name="registration_end" value="{{ old('registration_end') }}">
+                                       id="registration_end" name="registration_end" 
+                                       value="{{ old('registration_end', $event->registration_end ? \Carbon\Carbon::parse($event->registration_end)->format('Y-m-d\TH:i') : '') }}">
                                 @error('registration_end')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -100,7 +115,8 @@
                             <div class="mb-3">
                                 <label for="max_attendees" class="form-label">Số lượng tham gia tối đa</label>
                                 <input type="number" class="form-control @error('max_attendees') is-invalid @enderror" 
-                                       id="max_attendees" name="max_attendees" value="{{ old('max_attendees') }}" 
+                                       id="max_attendees" name="max_attendees" 
+                                       value="{{ old('max_attendees', $event->max_attendees) }}" 
                                        min="1" placeholder="Để trống nếu không giới hạn">
                                 @error('max_attendees')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -108,8 +124,8 @@
                             </div>
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="0" 
-                                       {{ old('is_free') ? 'checked' : '' }}>
+                                <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="1" 
+                                       {{ old('is_free', $event->is_free) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="is_free">
                                     Sự kiện miễn phí
                                 </label>
@@ -130,7 +146,8 @@
                                         id="organizer_id" name="organizer_id" required>
                                     <option value="">Chọn người tổ chức</option>
                                     @foreach($organizers as $organizer)
-                                        <option value="{{ $organizer->id }}" {{ old('organizer_id') == $organizer->id ? 'selected' : '' }}>
+                                        <option value="{{ $organizer->id }}" 
+                                                {{ old('organizer_id', $event->organizer_id) == $organizer->id ? 'selected' : '' }}>
                                             {{ $organizer->name }}
                                         </option>
                                     @endforeach
@@ -146,7 +163,8 @@
                                         id="category_id" name="category_id" required>
                                     <option value="">Chọn danh mục</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                        <option value="{{ $category->id }}" 
+                                                {{ old('category_id', $event->category_id) == $category->id ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -161,11 +179,14 @@
                                 <select class="form-select @error('venue_id') is-invalid @enderror" 
                                         id="venue_id" name="venue_id">
                                     <option value="">Chọn địa điểm</option>
-                                    {{-- @foreach($venues as $venue)
-                                        <option value="{{ $venue->id }}" {{ old('venue_id') == $venue->id ? 'selected' : '' }}>
-                                            {{ $venue->name }}
-                                        </option>
-                                    @endforeach --}}
+                                    @if(isset($venues))
+                                        @foreach($venues as $venue)
+                                            <option value="{{ $venue->id }}" 
+                                                    {{ old('venue_id', $event->venue_id) == $venue->id ? 'selected' : '' }}>
+                                                {{ $venue->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @error('venue_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -176,10 +197,10 @@
                                 <label for="status" class="form-label">Trạng thái</label>
                                 <select class="form-select @error('status') is-invalid @enderror" 
                                         id="status" name="status">
-                                    <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>Nháp</option>
-                                    <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
-                                    <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                                    <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Đã hoàn thành</option>
+                                    <option value="draft" {{ old('status', $event->status) == 'draft' ? 'selected' : '' }}>Nháp</option>
+                                    <option value="published" {{ old('status', $event->status) == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
+                                    <option value="cancelled" {{ old('status', $event->status) == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                    <option value="completed" {{ old('status', $event->status) == 'completed' ? 'selected' : '' }}>Đã hoàn thành</option>
                                 </select>
                                 @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -187,8 +208,8 @@
                             </div>
 
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="0" 
-                                       {{ old('is_featured') ? 'checked' : '' }}>
+                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="1" 
+                                       {{ old('is_featured', $event->is_featured) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="is_featured">
                                     Sự kiện nổi bật
                                 </label>
@@ -196,14 +217,43 @@
                         </div>
                     </div>
 
+                    <!-- Thông tin bổ sung -->
+                    @if($event->registrations && $event->registrations->count() > 0)
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">📊 Thống kê đăng ký</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <span>Đã đăng ký:</span>
+                                    <strong class="text-primary">{{ $event->registrations->count() }} người</strong>
+                                </div>
+                                @if($event->max_attendees)
+                                    <div class="progress mt-2" style="height: 6px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" 
+                                             style="width: {{ ($event->registrations->count() / $event->max_attendees) * 100 }}%"></div>
+                                    </div>
+                                    <small class="text-muted">{{ number_format(($event->registrations->count() / $event->max_attendees) * 100, 1) }}% đã đầy</small>
+                                @endif
+                                
+                                <div class="alert alert-warning mt-3">
+                                    <small>⚠️ Lưu ý: Thay đổi thông tin có thể ảnh hưởng đến người đã đăng ký</small>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="card">
                         <div class="card-body">
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-success">
-                                    Tạo sự kiện
+                                    💾 Cập nhật sự kiện
                                 </button>
+                                <a href="{{ route('events.show', $event->id) }}" class="btn btn-info">
+                                    👀 Xem chi tiết
+                                </a>
                                 <a href="{{ route('events.index') }}" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-left"></i> Quay lại
+                                    ⬅️ Quay lại danh sách
                                 </a>
                             </div>
                         </div>
@@ -230,7 +280,6 @@ function removeVietnameseTones(str) {
         'ư': 'u', 'ừ': 'u', 'ứ': 'u', 'ự': 'u', 'ử': 'u', 'ữ': 'u',
         'ỳ': 'y', 'ý': 'y', 'ỵ': 'y', 'ỷ': 'y', 'ỹ': 'y',
         'đ': 'd',
-        // Các ký tự hoa
         'À': 'A', 'Á': 'A', 'Ạ': 'A', 'Ả': 'A', 'Ã': 'A',
         'Â': 'A', 'Ầ': 'A', 'Ấ': 'A', 'Ậ': 'A', 'Ẩ': 'A', 'Ẫ': 'A',
         'Ă': 'A', 'Ằ': 'A', 'Ắ': 'A', 'Ặ': 'A', 'Ẳ': 'A', 'Ẵ': 'A',
@@ -258,6 +307,7 @@ function createSlug(str) {
         .replace(/-+/g, '-')
         .replace(/^-+|-+$/g, ''); 
 }
+
 document.getElementById('title').addEventListener('input', function() {
     const title = this.value;
     const slug = createSlug(title);
@@ -304,5 +354,56 @@ document.getElementById('registration_end').addEventListener('change', function(
         }
     }
 });
+
+// Preview ảnh khi chọn file mới
+document.getElementById('featured_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Tạo preview ảnh mới
+            let preview = document.getElementById('imagePreview');
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.id = 'imagePreview';
+                preview.className = 'mt-2';
+                e.target.parentNode.appendChild(preview);
+            }
+            preview.innerHTML = '<img src="' + e.target.result + '" class="img-thumbnail" style="max-width: 200px;"><div class="form-text">Ảnh mới sẽ được tải lên</div>';
+        }
+        reader.readAsDataURL(file);
+    }
+});
 </script>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.img-thumbnail {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.25rem;
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .row .col-md-8,
+    .row .col-md-4 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
 @endsection

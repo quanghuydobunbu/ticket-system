@@ -6,19 +6,14 @@ use App\Models\Category;
 
 interface CategoryRepositoryInterface{
     public function create(array $data);
-
     public function update(Category $category, array $data);
-
     public function delete(Category $category);
-
     public function findById($id);
-
     public function getAllCategory();
 }
 
 class CategoryRepository implements CategoryRepositoryInterface{
     public function create(array $data){
-        
         return Category::create($data);
     }
 
