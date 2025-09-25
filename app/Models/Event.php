@@ -28,4 +28,8 @@ class Event extends Model
     public function user(){
         return $this->belongsTo(User::class, 'organizer_id', 'id');
     }
+
+    public function venue(){
+        return $this->belongsTo(Venue::class, 'venue_id', 'id');
+    }
 }

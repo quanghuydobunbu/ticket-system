@@ -45,7 +45,7 @@
             </a>
           </li>
           <li>
-            <a href="forms-editors.html">
+            <a href="{{ route('venues.index') }}">
               <i class="bi bi-circle"></i><span>Các địa điểm</span>
             </a>
           </li>

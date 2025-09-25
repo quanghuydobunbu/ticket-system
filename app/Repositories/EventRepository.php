@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Category;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Venue;
 
 interface EventRepositoryInterface{
     public function create(array $data);
@@ -12,6 +13,7 @@ interface EventRepositoryInterface{
     public function getAllEvent();
     public function getAllCategory();
     public function getAllOrganizer();
+    public function getAllVenue();
     public function delete(Event $event);
     public function getAllWithFilters(array $filters = [], int $perPage = 4);
 
@@ -33,6 +35,9 @@ class EventRepository implements EventRepositoryInterface{
 
     public function getAllCategory(){
         return Category::all();
+    }
+    public function getAllVenue(){
+        return Venue::all();
     }
     public function getAllOrganizer(){
         return User::with(['role.role'])
