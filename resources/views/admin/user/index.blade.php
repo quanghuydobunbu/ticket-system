@@ -37,7 +37,7 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-select" name="status" onchange="this.form.submit()">
-                                    {{-- <option value="">Tất cả trạng thái</option> --}}
+                                    <option value="">Tất cả trạng thái</option>
                                     <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Hoạt động</option>
                                     <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Không hoạt động</option>
                                 </select>
@@ -45,7 +45,7 @@
                             <div class="col-md-3">
                                 <div class="d-flex gap-2">
                                     <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                                        <i class="bi bi-arrow-clockwise"></i> Reset
+                                        <i class="bi bi-arrow-clockwise"></i> Đặt lại
                                     </a>
                                 </div>
                             </div>

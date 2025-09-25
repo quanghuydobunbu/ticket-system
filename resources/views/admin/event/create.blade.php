@@ -161,11 +161,11 @@
                                 <select class="form-select @error('venue_id') is-invalid @enderror" 
                                         id="venue_id" name="venue_id">
                                     <option value="">Chọn địa điểm</option>
-                                    {{-- @foreach($venues as $venue)
+                                    @foreach($venues as $venue)
                                         <option value="{{ $venue->id }}" {{ old('venue_id') == $venue->id ? 'selected' : '' }}>
                                             {{ $venue->name }}
                                         </option>
-                                    @endforeach --}}
+                                    @endforeach
                                 </select>
                                 @error('venue_id')
                                     <div class="invalid-feedback">{{ $message }}</div>

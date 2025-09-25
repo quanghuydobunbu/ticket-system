@@ -33,7 +33,8 @@ class EventController extends Controller
     {
         $organizers = $this->eventService->getAllOrganizer();
         $categories = $this->eventService->getAllCategory();
-        return view('admin.event.create')->with('categories', $categories)->with('organizers', $organizers);
+        $venues = $this->eventService->getAllVenue();
+        return view('admin.event.create')->with('categories', $categories)->with('organizers', $organizers)->with('venues', $venues);
     }
 
     /**

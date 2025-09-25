@@ -117,6 +117,9 @@ class EventService{
     public function getAllOrganizer(){
         return $this->eventRepository->getAllOrganizer();
     }
+    public function getAllVenue(){
+        return $this->eventRepository->getAllVenue();
+    }
 
     private function uploadFeaturedImage(UploadedFile $imageFile): string
     {
