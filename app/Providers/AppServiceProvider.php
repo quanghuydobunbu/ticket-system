@@ -6,6 +6,8 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\CategoryRepositoryInterface;
 use App\Repositories\EventRepository;
 use App\Repositories\EventRepositoryInterface;
+use App\Repositories\TicketTypeRepository;
+use App\Repositories\TicketTypeRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Repositories\UserRepositoryInterface;
 use App\Repositories\VenueRepository;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(EventRepositoryInterface::class, EventRepository::class);
         $this->app->bind(VenueRepositoryInterface::class, VenueRepository::class);
+        $this->app->bind(TicketTypeRepositoryInterface::class, TicketTypeRepository::class);
     }
 
     /**
