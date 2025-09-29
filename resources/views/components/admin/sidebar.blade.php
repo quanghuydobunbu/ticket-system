@@ -58,7 +58,7 @@
         </a>
         <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="tables-general.html">
+            <a href="{{ route('tickets.index') }}">
               <i class="bi bi-circle"></i><span>Quản lý vé sự kiện</span>
             </a>
           </li>
@@ -77,17 +77,17 @@
         <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="charts-chartjs.html">
-              <i class="bi bi-circle"></i><span>Chart.js</span>
+              <i class="bi bi-circle"></i><span>Quản lý đơn hàng</span>
             </a>
           </li>
           <li>
             <a href="charts-apexcharts.html">
-              <i class="bi bi-circle"></i><span>ApexCharts</span>
+              <i class="bi bi-circle"></i><span>Chi tiết đơn hàng</span>
             </a>
           </li>
           <li>
             <a href="charts-echarts.html">
-              <i class="bi bi-circle"></i><span>ECharts</span>
+              <i class="bi bi-circle"></i><span>Quản lý phương thức thanh toán</span>
             </a>
           </li>
         </ul>

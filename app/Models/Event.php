@@ -32,4 +32,8 @@ class Event extends Model
     public function venue(){
         return $this->belongsTo(Venue::class, 'venue_id', 'id');
     }
+
+    public function ticketTypes(){
+        return $this->hasMany(TicketType::class, 'event_id', 'id');
+    }
 }
