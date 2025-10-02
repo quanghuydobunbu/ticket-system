@@ -1,57 +1,7 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventHub - Thanh toán</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <h1 class="text-2xl font-bold text-primary-600" onclick="goToHome()" style="cursor: pointer;">EventHub</h1>
-                    </div>
-                </div>
-                
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="index.html" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Trang chủ</a>
-                        <a href="cart.html" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Giỏ hàng</a>
-                        <span class="text-gray-900 font-medium px-3 py-2 rounded-md text-sm">Thanh toán</span>
-                    </div>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+@extends('layouts.home')
 
-    <!-- Checkout Progress -->
+@section('content')
+     <!-- Checkout Progress -->
     <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex items-center justify-center space-x-8">
@@ -134,13 +84,13 @@
                                         <span class="block text-sm text-gray-500">Vé điện tử sẽ được gửi qua email</span>
                                     </span>
                                 </label>
-                                <label class="flex items-center">
+                                {{-- <label class="flex items-center">
                                     <input type="radio" name="delivery" value="sms" class="text-primary-600 focus:ring-primary-500">
                                     <span class="ml-3">
                                         <span class="font-medium">Gửi SMS</span>
                                         <span class="block text-sm text-gray-500">Mã vé sẽ được gửi qua tin nhắn SMS</span>
                                     </span>
-                                </label>
+                                </label> --}}
                             </div>
                         </div>
                     </div>
@@ -168,7 +118,7 @@
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center justify-between">
                                         <span class="font-medium text-gray-900">Ví MoMo</span>
-                                        <img src="https://developers.momo.vn/v3/vi/assets/images/square-logo.png" alt="MoMo" class="h-6">
+                                        <img src="https://developers.momo.vn/v3/img/logo.svg" alt="MoMo" class="h-6">
                                     </div>
                                     <p class="text-sm text-gray-500 mt-1">Thanh toán qua ví điện tử MoMo</p>
                                 </div>
@@ -253,11 +203,28 @@
                         </div>
 
                         <!-- Checkout Button -->
-                        <a href="{{ route('comfirm_checkout') }}">
+                        {{-- <a href="{{ route('comfirm_checkout') }}">
                             <button class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold text-lg transition duration-200 mt-6">
                                 <i class="fas fa-lock mr-2"></i>Thanh toán an toàn
                             </button>
-                        </a>
+                        </a> --}}
+
+                        <form id="paymentForm" method="POST" action="{{ route('vnpay.payment') }}">
+                            @csrf
+                            <input type="hidden" name="fullName" id="hiddenFullName">
+                            <input type="hidden" name="phone" id="hiddenPhone">
+                            <input type="hidden" name="email" id="hiddenEmail">
+                            <input type="hidden" name="delivery" id="hiddenDelivery">
+                            <input type="hidden" name="notes" id="hiddenNotes">
+                            <input type="hidden" name="amount" id="hiddenAmount">
+                            <input type="hidden" name="cart" id="hiddenCart">
+                            <input type="hidden" name="paymentMethod" id="hiddenPaymentMethod">
+                            {{-- <input type="hidden" name="event_id" id="" value="{{ $item->id }}"> --}}
+                            
+                            <button type="button" onclick="processPayment()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold text-lg transition duration-200 mt-6">
+                                <i class="fas fa-lock mr-2"></i>Thanh toán an toàn
+                            </button>
+                        </form>
                         
 
                         <!-- Security Notice -->
@@ -286,27 +253,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="bg-white rounded-xl max-w-md w-full p-8 text-center">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check text-2xl text-green-600"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Thanh toán thành công!</h2>
-                <p class="text-gray-600 mb-6">Vé của bạn đã được đặt thành công. Thông tin vé sẽ được gửi qua email trong vài phút.</p>
-                <div class="space-y-3">
-                    <button onclick="goToHome()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-semibold">
-                        Về trang chủ
-                    </button>
-                    <button onclick="downloadTicket()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold">
-                        <i class="fas fa-download mr-2"></i>Tải vé về
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <script>
         // Get cart from localStorage
@@ -361,7 +308,7 @@
             // Render cart items
             orderItems.innerHTML = cart.map(item => `
                 <div class="flex items-center space-x-3">
-                    <img src="${item.image}" alt="${item.eventTitle}" class="w-12 h-12 object-cover rounded-lg">
+                    <img src="storage/events/${item.image}" alt="${item.eventTitle}" class="w-12 h-12 object-cover rounded-lg">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 truncate">${item.eventTitle}</p>
                         <p class="text-xs text-gray-500">${item.ticketType} x${item.quantity}</p>
@@ -418,7 +365,7 @@
         }
 
         // Process payment
-        async function processPayment() {
+        function processPayment() {
             if (!validateForm()) {
                 return;
             }
@@ -429,71 +376,52 @@
                 return;
             }
 
-            // Show loading state
+            // Lấy payment method
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+            // Show loading
             const button = event.target;
             const originalText = button.innerHTML;
             button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang xử lý...';
             button.disabled = true;
 
-            // Collect form data
-            const formData = {
-                customerInfo: {
-                    fullName: document.getElementById('fullName').value,
-                    phone: document.getElementById('phone').value,
-                    email: document.getElementById('email').value,
-                    delivery: document.querySelector('input[name="delivery"]:checked').value
-                },
-                paymentMethod: document.querySelector('input[name="payment"]:checked').value,
-                notes: document.getElementById('notes').value,
-                cart: cart,
-                totals: calculateTotals()
-            };
-
             try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Điền dữ liệu vào hidden fields
+                document.getElementById('hiddenFullName').value = document.getElementById('fullName').value;
+                document.getElementById('hiddenPhone').value = document.getElementById('phone').value;
+                document.getElementById('hiddenEmail').value = document.getElementById('email').value;
+                document.getElementById('hiddenDelivery').value = document.querySelector('input[name="delivery"]:checked').value;
+                document.getElementById('hiddenNotes').value = document.getElementById('notes').value;
+                document.getElementById('hiddenPaymentMethod').value = paymentMethod;
+                
+                const totals = calculateTotals();
+                document.getElementById('hiddenAmount').value = totals.total;
+                document.getElementById('hiddenCart').value = JSON.stringify(cart);
 
-                // Simulate different payment methods
-                const paymentMethod = formData.paymentMethod;
-                let paymentSuccess = true;
-
-                switch (paymentMethod) {
-                    case 'vnpay':
-                        showNotification('Đang chuyển hướng đến VNPay...', 'info');
-                        break;
-                    case 'momo':
-                        showNotification('Đang chuyển hướng đến MoMo...', 'info');
-                        break;
-                    case 'credit-card':
-                        showNotification('Đang xử lý thẻ tín dụng...', 'info');
-                        break;
-                    case 'bank-transfer':
-                        showNotification('Đang tạo lệnh chuyển khoản...', 'info');
-                        break;
+                // Xử lý theo payment method
+                if (paymentMethod === 'vnpay') {
+                    showNotification('Đang chuyển đến VNPay...', 'info');
+                    // Submit form để redirect đến VNPay
+                    setTimeout(() => {
+                        document.getElementById('paymentForm').submit();
+                    }, 500);
+                } else if (paymentMethod === 'momo') {
+                    showNotification('Tính năng MoMo đang phát triển!', 'info');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                } else if (paymentMethod === 'credit-card') {
+                    showNotification('Tính năng thẻ tín dụng đang phát triển!', 'info');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                } else if (paymentMethod === 'bank-transfer') {
+                    showNotification('Tính năng chuyển khoản đang phát triển!', 'info');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
                 }
 
-                if (paymentSuccess) {
-                    // Clear cart after successful payment
-                    localStorage.removeItem('eventHub_cart');
-                    localStorage.removeItem('eventHub_promo');
-                    
-                    // Save order info for receipt
-                    const orderInfo = {
-                        orderId: 'EVT' + Date.now(),
-                        date: new Date().toLocaleDateString('vi-VN'),
-                        ...formData
-                    };
-                    localStorage.setItem('eventHub_lastOrder', JSON.stringify(orderInfo));
-
-                    // Show success modal
-                    document.getElementById('successModal').classList.remove('hidden');
-                } else {
-                    showNotification('Thanh toán thất bại! Vui lòng thử lại.', 'error');
-                }
             } catch (error) {
+                console.error('Payment error:', error);
                 showNotification('Có lỗi xảy ra! Vui lòng thử lại.', 'error');
-            } finally {
-                // Restore button
                 button.innerHTML = originalText;
                 button.disabled = false;
             }
@@ -509,29 +437,29 @@
 
             // Create a simple text receipt
             const receiptContent = `
-EVENTHUB - VÉ SỰ KIỆN
-====================
+                EVENTHUB - VÉ SỰ KIỆN
+                ====================
 
-Mã đơn hàng: ${orderInfo.orderId}
-Ngày đặt: ${orderInfo.date}
-Khách hàng: ${orderInfo.customerInfo.fullName}
-Email: ${orderInfo.customerInfo.email}
-Số điện thoại: ${orderInfo.customerInfo.phone}
+                Mã đơn hàng: ${orderInfo.orderId}
+                Ngày đặt: ${orderInfo.date}
+                Khách hàng: ${orderInfo.customerInfo.fullName}
+                Email: ${orderInfo.customerInfo.email}
+                Số điện thoại: ${orderInfo.customerInfo.phone}
 
-CHI TIẾT VÉ:
-${orderInfo.cart.map(item => `
-- ${item.eventTitle}
-  Loại vé: ${item.ticketType}
-  Số lượng: ${item.quantity}
-  Đơn giá: ${item.price.toLocaleString()}₫
-  Thành tiền: ${(item.price * item.quantity).toLocaleString()}₫
-  Ngày: ${item.date}
-  Địa điểm: ${item.location}
-`).join('\n')}
+                CHI TIẾT VÉ:
+                ${orderInfo.cart.map(item => `
+                - ${item.eventTitle}
+                Loại vé: ${item.ticketType}
+                Số lượng: ${item.quantity}
+                Đơn giá: ${item.price.toLocaleString()}₫
+                Thành tiền: ${(item.price * item.quantity).toLocaleString()}₫
+                Ngày: ${item.date}
+                Địa điểm: ${item.location}
+                `).join('\n')}
 
-TỔNG TIỀN: ${orderInfo.totals.total.toLocaleString()}₫
+                TỔNG TIỀN: ${orderInfo.totals.total.toLocaleString()}₫
 
-Cảm ơn bạn đã sử dụng dịch vụ EventHub!
+                Cảm ơn bạn đã sử dụng dịch vụ EventHub!
             `;
 
             // Download as text file
@@ -575,30 +503,14 @@ Cảm ơn bạn đã sử dụng dịch vụ EventHub!
             }, 3000);
         }
 
-        // Form auto-fill for demo purposes
-        function fillDemoData() {
-            document.getElementById('fullName').value = 'Nguyễn Văn Demo';
-            document.getElementById('phone').value = '0901234567';
-            document.getElementById('email').value = 'demo@example.com';
-        }
-
-        // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
             updateOrderSummary();
             
-            // Auto-fill demo data after 1 second for testing
             setTimeout(() => {
                 if (document.getElementById('fullName').value === '') {
                     fillDemoData();
                 }
             }, 1000);
-        });
-
-        // Close success modal when clicking outside
-        document.getElementById('successModal').addEventListener('click', (e) => {
-            if (e.target.id === 'successModal') {
-                goToHome();
-            }
         });
     </script>
 
@@ -632,5 +544,4 @@ Cảm ơn bạn đã sử dụng dịch vụ EventHub!
             background-color: #eff6ff;
         }
     </style>
-</body>
-</html>
+@endsection
