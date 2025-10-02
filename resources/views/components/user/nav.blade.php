@@ -11,8 +11,8 @@
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="{{ route('dashboard') }}" class="text-gray-900 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Trang chủ</a>
                         <a href="{{ route('event') }}" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Sự kiện</a>
-                        <a href="#about" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Giới thiệu</a>
-                        {{-- <a href="#support" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Hỗ trợ</a> --}}
+                        <a href="#support" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Hỗ trợ</a>
+                        <a href="#about" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Vé của tôi</a>
                     </div>
                 </div>
                 

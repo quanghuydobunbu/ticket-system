@@ -39,7 +39,7 @@
         </div>
     </div>
 </section>
-
+{{-- 
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Thể loại sự kiện</h2>
@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- Events List -->
 <section id="events" class="py-16 bg-white">
@@ -114,7 +114,9 @@
         <!-- Load More Button -->
         <div class="text-center mt-12">
             <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold transition duration-200" onclick="loadMoreEvents()">
-                <i class="fas fa-plus mr-2"></i>Xem thêm sự kiện
+                <a href="{{ route('event') }}">
+                    <i class="fas fa-plus mr-2"></i>Xem thêm sự kiện
+                </a>
             </button>
         </div>
     </div>
@@ -169,14 +171,12 @@
 </div>
 
 <script>
-    // Truyền dữ liệu từ Laravel vào JavaScript - CÁCH ĐƠN GIẢN
     const laravelEvents = @json($events->keyBy('id'));
     
     let currentSlide = 0;
     let currentEvent = null;
     const totalSlides = {{ $events->count() >= 3 ? 3 : $events->count() }};
 
-    // Get cart from localStorage or initialize empty
     function getCart() {
         try {
             return JSON.parse(localStorage.getItem('eventHub_cart') || '[]');
@@ -184,22 +184,11 @@
             return [];
         }
     }
-
-    // Save cart to localStorage
     function saveCart(cart) {
         localStorage.setItem('eventHub_cart', JSON.stringify(cart));
         updateCartCount();
     }
 
-    // Update cart count in nav
-    // function updateCartCount() {
-    //     const cart = getCart();
-    //     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    //     const cartCountEl = document.getElementById('cartCount');
-    //     if (cartCountEl) {
-    //         cartCountEl.textContent = totalItems;
-    //     }
-    // }
 
     function updateCartCount() {
             const cart = getCart();

@@ -162,10 +162,10 @@
                                 </td>
                                 <td>
                                     @if($ticket->booking)
-                                        <a href="{{ route('bookings.show', $ticket->booking->id) }}" 
+                                        {{-- <a href="{{ route('bookings.show', $ticket->booking->id) }}" 
                                            class="text-decoration-none">
                                             #{{ $ticket->booking->booking_code ?? $ticket->booking_id }}
-                                        </a>
+                                        </a> --}}
                                         <div class="text-muted small">
                                             {{ $ticket->booking->customer_name ?? 'N/A' }}
                                         </div>

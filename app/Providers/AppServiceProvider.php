@@ -6,6 +6,8 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\CategoryRepositoryInterface;
 use App\Repositories\EventRepository;
 use App\Repositories\EventRepositoryInterface;
+use App\Repositories\HomeRepository;
+use App\Repositories\HomeRepositoryInterface;
 use App\Repositories\TicketTypeRepository;
 use App\Repositories\TicketTypeRepositoryInterface;
 use App\Repositories\UserRepository;
@@ -13,6 +15,7 @@ use App\Repositories\UserRepositoryInterface;
 use App\Repositories\VenueRepository;
 use App\Repositories\VenueRepositoryInterface;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(EventRepositoryInterface::class, EventRepository::class);
         $this->app->bind(VenueRepositoryInterface::class, VenueRepository::class);
         $this->app->bind(TicketTypeRepositoryInterface::class, TicketTypeRepository::class);
+        $this->app->bind(HomeRepositoryInterface::class, HomeRepository::class);
     }
 
     /**
@@ -35,5 +39,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        Carbon::setLocale('vi');
     }
 }

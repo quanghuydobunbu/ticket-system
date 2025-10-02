@@ -12,23 +12,20 @@
         
         <!-- Search Bar -->
         <div class="max-w-2xl mx-auto">
-            <div class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1 relative">
-                    <input 
-                        type="text" 
-                        id="searchInput"
-                        placeholder="Tìm kiếm sự kiện..." 
-                        class="w-full px-6 py-4 pl-12 rounded-lg border-0 shadow-lg text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-primary-300"
-                    >
-                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <button 
-                    onclick="searchEvents()"
-                    class="bg-white text-primary-600 px-8 py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition duration-200"
-                >
-                    Tìm kiếm
-                </button>
-            </div>
+                <form class="flex flex-col sm:flex-row gap-4" action="{{ route('event') }}" method="GET">
+                        <input 
+                            type="text" 
+                            name="search-event"
+                            value="<?= $_GET['search-event'] ?? '' ?>"
+                            id="searchInput"
+                            placeholder="Tìm kiếm sự kiện..." 
+                            class="w-full px-6 pl-12 rounded-lg border-0 shadow-lg text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-primary-300"
+                        >
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <button type="submit" class="bg-white text-primary-600 px-8 rounded-lg font-semibold shadow-lg hover:shadow-xl transition duration-200">
+                        Tìm kiếm
+                    </button>
+                </form>
         </div>
     </div>
 </section>
@@ -44,30 +41,14 @@
                 >
                     Tất cả
                 </button>
-                <button 
-                    onclick="filterByCategory('music')" 
-                    class="filter-btn px-4 py-2 rounded-full border border-gray-300 hover:border-primary-500 hover:text-primary-600 transition duration-200"
-                >
-                    <i class="fas fa-music mr-2"></i>Âm nhạc
-                </button>
-                <button 
-                    onclick="filterByCategory('conference')" 
-                    class="filter-btn px-4 py-2 rounded-full border border-gray-300 hover:border-primary-500 hover:text-primary-600 transition duration-200"
-                >
-                    <i class="fas fa-users mr-2"></i>Hội thảo
-                </button>
-                <button 
-                    onclick="filterByCategory('sports')" 
-                    class="filter-btn px-4 py-2 rounded-full border border-gray-300 hover:border-primary-500 hover:text-primary-600 transition duration-200"
-                >
-                    <i class="fas fa-football-ball mr-2"></i>Thể thao
-                </button>
-                <button 
-                    onclick="filterByCategory('art')" 
-                    class="filter-btn px-4 py-2 rounded-full border border-gray-300 hover:border-primary-500 hover:text-primary-600 transition duration-200"
-                >
-                    <i class="fas fa-palette mr-2"></i>Nghệ thuật
-                </button>
+                @foreach($categories as $category)
+                    <button 
+                        onclick="filterByCategory('music')" 
+                        class="filter-btn px-4 py-2 rounded-full border border-gray-300 hover:border-primary-500 hover:text-primary-600 transition duration-200"
+                    >
+                        {{ $category->name ?? '' }}
+                    </button>
+                @endforeach
             </div>
             
             <div class="flex gap-4">
@@ -311,15 +292,20 @@
         updateCartCount();
     }
 
-    // Update cart count in nav
-    function updateCartCount() {
-        const cart = getCart();
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const cartCountEl = document.getElementById('cartCount');
-        if (cartCountEl) {
-            cartCountEl.textContent = totalItems;
+    // function updateCartCount() {
+    //     const cart = getCart();
+    //     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    //     const cartCountEl = document.getElementById('cartCount');
+    //     if (cartCountEl) {
+    //         cartCountEl.textContent = totalItems;
+    //     }
+    // }
+
+     function updateCartCount() {
+            const cart = getCart();
+            // const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = cart.length;
         }
-    }
 
     // Search functionality
     function searchEvents() {
@@ -629,7 +615,7 @@
                 if (!quantityEl) return;
                 
                 const quantity = parseInt(quantityEl.textContent);
-                if (quantity > 0) {
+                if (quantity > 0 && ticket.quantity_sold > 0) {
                     const cartItem = {
                         eventId: currentEvent,
                         eventTitle: event.title,
@@ -692,7 +678,7 @@
             closeModalHandler();
             showNotification(`Đã thêm ${addedItems} vé vào giỏ hàng!`);
         } else {
-            showNotification('Vui lòng chọn ít nhất 1 vé!', 'error');
+            showNotification('Vui lòng kiểm tra lại', 'error');
         }
     }
 
