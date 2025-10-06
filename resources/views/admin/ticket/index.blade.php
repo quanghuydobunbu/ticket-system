@@ -98,58 +98,42 @@
                    class="btn btn-outline-primary">
                     <i class="bi bi-download"></i> Xuất Excel
                 </a> --}}
-                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#qrScanModal">
-                    <i class="bi bi-qr-code-scan"></i> Quét QR
-                </button>
+                <a href="{{ route('check-in.scanner') }}">
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#qrScanModal">
+                        <i class="bi bi-qr-code-scan"></i> Quét QR
+                    </button>
+                </a>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead class="">
                     <tr>
-                        <th scope="col">
-                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'ticket_code', 'direction' => request('sort') === 'ticket_code' && request('direction') === 'asc' ? 'desc' : 'asc']) }}" 
-                            class="text-decoration-none text-white">
-                                Mã vé
-                                @if(request('sort') === 'ticket_code')
-                                    <i class="bi bi-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }}"></i>
-                                @endif
-                            </a>
-                        </th>
-                        <th scope="col">Người tham dự</th>
+                        {{-- <th scope="col">Người tham dự</th> --}}
                         <th scope="col">Loại vé</th>
-                        <th scope="col">Booking</th>
+                        <th scope="col">Mã vé</th>
                         <th scope="col">QR Code</th>
                         <th scope="col">Trạng thái</th>
                         <th scope="col">Check-in</th>
-                        <th scope="col">
-                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'created_at', 'direction' => request('sort') === 'created_at' && request('direction') === 'asc' ? 'desc' : 'asc']) }}" 
-                            class="text-decoration-none text-white">
-                                Ngày tạo
-                                @if(request('sort') === 'created_at')
-                                    <i class="bi bi-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }}"></i>
-                                @endif
-                            </a>
-                        </th>
                         <th scope="col">Thao tác</th>
                     </tr>
                     </thead>
                     <tbody>
                         @forelse ($tickets as $ticket)
                             <tr>
-                                <td>
+                                {{-- <td>
                                     <div>
                                         <strong class="text-primary">{{ $ticket->ticket_code }}</strong>
                                     </div>
-                                </td>
-                                <td>
+                                </td> --}}
+                                {{-- <td>
                                     <div>
                                         <strong>{{ $ticket->attendee_name }}</strong>
                                         @if($ticket->booking && $ticket->booking->email)
                                             <div class="text-muted small">{{ $ticket->booking->email }}</div>
                                         @endif
                                     </div>
-                                </td>
+                                </td> --}}
                                 <td>
                                     <div>
                                         <span class="badge bg-info">{{ $ticket->ticketType->name ?? 'N/A' }}</span>
@@ -161,13 +145,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if($ticket->booking)
-                                        {{-- <a href="{{ route('bookings.show', $ticket->booking->id) }}" 
-                                           class="text-decoration-none">
-                                            #{{ $ticket->booking->booking_code ?? $ticket->booking_id }}
-                                        </a> --}}
+                                    @if($ticket->ticket_code)
                                         <div class="text-muted small">
-                                            {{ $ticket->booking->customer_name ?? 'N/A' }}
+                                            {{ $ticket->ticket_code ?? 'N/A' }}
                                         </div>
                                     @else
                                         <span class="text-muted">N/A</span>
@@ -187,11 +167,13 @@
                                             <div class="modal-dialog modal-sm">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h6 class="modal-title">QR Code - {{ $ticket->ticket_code }}</h6>
+                                                        <h6 class="modal-title">
+                                                            {!! QrCode::size(250)->generate($ticket->qr_code) !!}
+                                                        </h6>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body text-center">
-                                                        {!! $ticket->qr_code !!}
+                                                        {{-- {!! $ticket->qr_code !!} --}}
                                                         <p class="mt-2 small text-muted">{{ $ticket->attendee_name }}</p>
                                                     </div>
                                                 </div>
@@ -240,13 +222,7 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="small">
-                                        {{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y') }}
-                                        <br>
-                                        <span class="text-muted">{{ \Carbon\Carbon::parse($ticket->created_at)->format('H:i') }}</span>
-                                    </div>
-                                </td>
+                               
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('tickets.show', $ticket->id) }}" 
@@ -278,12 +254,12 @@
                                         @method('DELETE')
                                     </form>
 
-                                    {{-- <form id="checkin-form-{{ $ticket->id }}" 
+                                    <form id="checkin-form-{{ $ticket->id }}" 
                                         action="{{ route('tickets.checkin', $ticket->id) }}" 
                                         method="POST" style="display: none;">
                                         @csrf
                                         @method('PATCH')
-                                    </form> --}}
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -309,28 +285,6 @@
                     {{ $tickets->links() }}
                 </div>
             @endif
-        </div>
-    </div>
-
-    <!-- QR Scanner Modal -->
-    <div class="modal fade" id="qrScanModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Quét QR Code Check-in</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="qr-reader" style="width: 100%;"></div>
-                    <div class="mt-3">
-                        <label for="manual-code" class="form-label">Hoặc nhập mã vé thủ công:</label>
-                        <div class="input-group">
-                            <input type="text" id="manual-code" class="form-control" placeholder="Nhập mã vé...">
-                            <button class="btn btn-primary" id="manual-checkin-btn">Check-in</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 @endsection
@@ -371,70 +325,5 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-
-    // Check-in functionality
-    const checkinButtons = document.querySelectorAll('.check-in-btn');
-    checkinButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-ticket-id');
-            const ticketCode = this.getAttribute('data-ticket-code');
-            
-            Swal.fire({
-                title: 'Xác nhận check-in?',
-                text: `Bạn có chắc chắn muốn check-in cho vé "${ticketCode}"?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Check-in',
-                cancelButtonText: 'Hủy bỏ',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('checkin-form-' + ticketId).submit();
-                }
-            });
-        });
-    });
-
-    // QR Scanner functionality
-    let html5QrcodeScanner;
-    
-    document.getElementById('qrScanModal').addEventListener('shown.bs.modal', function() {
-        function onScanSuccess(decodedText, decodedResult) {
-            // Handle scan success
-            processTicketCode(decodedText);
-            html5QrcodeScanner.clear();
-        }
-
-        function onScanFailure(error) {
-            // Handle scan failure
-            console.warn(`Code scan error = ${error}`);
-        }
-
-        html5QrcodeScanner = new Html5QrcodeScanner(
-            "qr-reader",
-            { fps: 10, qrbox: {width: 250, height: 250} },
-            false);
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-    });
-
-    document.getElementById('qrScanModal').addEventListener('hidden.bs.modal', function() {
-        if (html5QrcodeScanner) {
-            html5QrcodeScanner.clear();
-        }
-    });
-
-    // Manual check-in
-    document.getElementById('manual-checkin-btn').addEventListener('click', function() {
-        const code = document.getElementById('manual-code').value.trim();
-        if (code) {
-            processTicketCode(code);
-        } else {
-            Swal.fire('Lỗi', 'Vui lòng nhập mã vé', 'error');
-        }
-    });
-
-   
 });
 </script>

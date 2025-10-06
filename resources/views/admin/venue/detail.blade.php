@@ -139,8 +139,8 @@
                                 <tbody>
                                     @foreach($venue->events->take(5) as $event)
                                     <tr>
-                                        <td>{{ $event->name }}</td>
-                                        <td>{{ $event->start_date ? \Carbon\Carbon::parse($event->start_date)->format('d/m/Y') : 'Chưa xác định' }}</td>
+                                        <td>{{ $event->title }}</td>
+                                        <td>{{ $event->start_datetime ? \Carbon\Carbon::parse($event->start_date)->format('d/m/Y') : 'Chưa xác định' }}</td>
                                         <td>
                                             @if($event->status == 'active')
                                                 <span class="badge bg-success">Hoạt động</span>

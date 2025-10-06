@@ -2,12 +2,16 @@
 
 namespace App\Providers;
 
+use App\Repositories\BookingRepository;
+use App\Repositories\BookingRepositoryInterface;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CategoryRepositoryInterface;
 use App\Repositories\EventRepository;
 use App\Repositories\EventRepositoryInterface;
 use App\Repositories\HomeRepository;
 use App\Repositories\HomeRepositoryInterface;
+use App\Repositories\TicketRepository;
+use App\Repositories\TicketRepositoryInterface;
 use App\Repositories\TicketTypeRepository;
 use App\Repositories\TicketTypeRepositoryInterface;
 use App\Repositories\UserRepository;
@@ -31,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VenueRepositoryInterface::class, VenueRepository::class);
         $this->app->bind(TicketTypeRepositoryInterface::class, TicketTypeRepository::class);
         $this->app->bind(HomeRepositoryInterface::class, HomeRepository::class);
+        $this->app->bind(BookingRepositoryInterface::class, BookingRepository::class);
+        $this->app->bind(TicketRepositoryInterface::class, TicketRepository::class);
     }
 
     /**
