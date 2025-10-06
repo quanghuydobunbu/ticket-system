@@ -105,7 +105,7 @@
                                     @endif
                                 </a>
                             </th>
-                            <th scope="col">Số lượng</th>
+                            <th scope="col">Đã bán</th>
                             <th scope="col">Còn lại</th>
                             <th scope="col">Giới hạn/Đơn</th>
                             <th scope="col">Ngưng bán</th>
@@ -136,20 +136,9 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-primary fs-6">{{ number_format($ticketType->quantity_total) }}</span>
+                                        <span class="badge bg-primary fs-6">{{ number_format($ticketType->quantity_sold) }}</span>
                                     </td>
-                                    {{-- <td class="text-center">
-                                        <div>
-                                            <span class="badge bg-info fs-6">{{ number_format($ticketType->quantity_sold) }}</span>
-                                            @if($ticketType->quantity_total > 0)
-                                                <div class="progress mt-1" style="height: 4px;">
-                                                    <div class="progress-bar bg-info" 
-                                                        style="width: {{ $soldPercentage }}%"></div>
-                                                </div>
-                                                <small class="text-muted">{{ number_format($soldPercentage, 1) }}%</small>
-                                            @endif
-                                        </div>
-                                    </td> --}}
+                                    
                                     <td class="text-center">
                                         <span class="badge {{ $remaining <= 10 ? 'bg-danger' : ($remaining <= 50 ? 'bg-warning' : 'bg-success') }} fs-6">
                                             {{ number_format($remaining) }}

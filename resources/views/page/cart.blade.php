@@ -29,18 +29,22 @@
                     <div id="emptyCart" class="p-12 text-center hidden">
                         <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
                         <h3 class="text-xl font-semibold text-gray-700 mb-2">Giỏ hàng trống</h3>
-                        <p class="text-gray-500 mb-6">Bạn chưa có vé nào trong giỏ hàng</p>
-                        <button onclick="goToHome()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold">
-                            <i class="fas fa-arrow-left mr-2"></i>Tiếp tục mua sắm
-                        </button>
+                        <p class="text-gray-500 mb-6">Bạn chưa có vé nào trong giỏ hàng</p>\
+                        <a href="{{ route('event') }}">
+                            <button class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold">
+                                <i class="fas fa-arrow-left mr-2"></i>Tiếp tục mua sắm
+                            </button>
+                        </a>
                     </div>
 
                     <div id="cartItemsList" class="divide-y divide-gray-200">
                     </div>
 
                     <div id="continueShopping" class="p-6 border-t border-gray-200 hidden">
-                        <button onclick="goToHome()" class="text-primary-600 hover:text-primary-700 font-medium">
-                            <i class="fas fa-arrow-left mr-2"></i>Tiếp tục mua sắm
+                        <button class="text-primary-600 hover:text-primary-700 font-medium">
+                            <a href="{{ route('event') }}">
+                                <i class="fas fa-arrow-left mr-2"></i>Tiếp tục mua sắm
+                            </a>
                         </button>
                     </div>
                 </div>
@@ -109,10 +113,6 @@
         function saveCart(cart) {
             localStorage.setItem('eventHub_cart', JSON.stringify(cart));
             updateCartDisplay();
-        }
-
-        function goToHome() {
-            window.location.href = 'index.html';
         }
 
         function goToCheckout() {

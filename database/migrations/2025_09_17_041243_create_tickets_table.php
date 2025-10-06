@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('ticket_code', 20)->unique();
+            $table->string('ticket_code', 50)->unique();
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
             $table->foreignId('ticket_type_id')->constrained('ticket_types')->onDelete('restrict');
             $table->string('attendee_name', 255)->nullable();

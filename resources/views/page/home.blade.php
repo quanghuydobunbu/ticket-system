@@ -39,30 +39,6 @@
         </div>
     </div>
 </section>
-{{-- 
-<section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Thể loại sự kiện</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-center cursor-pointer" onclick="filterByCategory('music')">
-                <i class="fas fa-music text-4xl text-primary-600 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Âm nhạc</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-center cursor-pointer" onclick="filterByCategory('conference')">
-                <i class="fas fa-users text-4xl text-green-600 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Hội thảo</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-center cursor-pointer" onclick="filterByCategory('sports')">
-                <i class="fas fa-football-ball text-4xl text-orange-600 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Thể thao</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-center cursor-pointer" onclick="filterByCategory('art')">
-                <i class="fas fa-palette text-4xl text-purple-600 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Nghệ thuật</h3>
-            </div>
-        </div>
-    </div>
-</section> --}}
 
 <!-- Events List -->
 <section id="events" class="py-16 bg-white">
@@ -286,7 +262,7 @@
                         <span class="text-lg font-bold text-primary-600">${priceDisplay}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Còn lại: ${ticket.quantity_sold || 0}</span>
+                        <span class="text-sm text-gray-500">Còn lại: ${ticket.quantity_total - ticket.quantity_sold}</span>
                         <div class="flex items-center space-x-2">
                             <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-full" onclick="decreaseQuantity(${index})">
                                 <i class="fas fa-minus text-xs"></i>
@@ -388,7 +364,7 @@
                 
                 const quantity = parseInt(quantityEl.textContent);
                
-                if (quantity > 0 && ticket.quantity_sold > 0) {
+                if (quantity > 0) {
                     const cartItem = {
                         eventId: currentEvent,
                         eventTitle: event.title,
@@ -477,7 +453,6 @@
         showNotification('Đang tải thêm sự kiện...', 'info');
         // Implement pagination logic here
     }
-
     // Notification system
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');

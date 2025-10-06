@@ -517,7 +517,7 @@
                         <span class="text-lg font-bold text-primary-600">${priceDisplay}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Còn lại: ${ticket.quantity_sold || 0}</span>
+                        <span class="text-sm text-gray-500">Còn lại: ${ticket.quantity_total - ticket.quantity_sold}</span>
                         <div class="flex items-center space-x-2">
                             <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-full" onclick="decreaseQuantity(${index})">
                                 <i class="fas fa-minus text-xs"></i>
@@ -615,7 +615,7 @@
                 if (!quantityEl) return;
                 
                 const quantity = parseInt(quantityEl.textContent);
-                if (quantity > 0 && ticket.quantity_sold > 0) {
+                if (quantity > 0 && (ticket.quantity_total - ticket.quantity_sold > 0)) {
                     const cartItem = {
                         eventId: currentEvent,
                         eventTitle: event.title,

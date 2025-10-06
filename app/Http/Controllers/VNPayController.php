@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class VNPayController extends Controller
 {
@@ -280,14 +281,23 @@ class VNPayController extends Controller
         return $descriptions[$responseCode] ?? 'Lỗi không xác định';
     }
 
-    private function generateTicketCode($bookingCode, $sequence)
+    // private function generateTicketCode($bookingCode, $sequence)
+    // {
+    //     return $bookingCode . '-T' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+    // }
+
+    private function generateTicketCode($bookingCode, $index)
     {
-        return $bookingCode . '-T' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return $bookingCode . '-T' . str_pad($index, 3, '0', STR_PAD_LEFT) . '-' . substr(microtime(true) * 10000, -4);
     }
 
     private function generateQRCode($ticketCode)
     {
-        return $ticketCode;
+        do {
+            $qrCode = strtoupper(Str::random(12));
+        } while (Ticket::where('qr_code', $qrCode)->exists());
+        
+        return $qrCode;
     }
 
     public function success()
