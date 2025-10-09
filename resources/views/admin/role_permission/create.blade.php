@@ -38,10 +38,6 @@
                     <label for="role_id" class="form-label fw-bold">Vai trò</label>
                     <select disabled class="form-select form-select-lg mb-3" name="role_id_display" id="role_id_display" aria-label="Chọn vai trò">
                       <option value="">-- Chọn vai trò --</option>
-
-                      
-
-
                       @foreach ($list_roles as $role)
                         <option value="{{ $role->id }}" {{ $role->id == $role_id ? 'selected' : '' }}>{{ $role->description }}</option>
                       @endforeach
@@ -100,7 +96,7 @@
 
 @section('scripts')
 <script>
-$(function(){
+$(document).ready(function(){
     // Hàm load permissions cho role
     function loadRolePermissions(role_id) {
         if(!role_id) {
@@ -122,10 +118,8 @@ $(function(){
             if(response.success && response.data) {
                 var arrPermission = response.data;
                 
-                // Reset tất cả checkbox
                 $("#permission_id input[type='checkbox']").prop('checked', false);
                 
-                // Check những permission đã có
                 $("#permission_id input[type='checkbox']").each(function(){
                     var value = parseInt($(this).val());
                     if(arrPermission.includes(value)){
@@ -140,15 +134,12 @@ $(function(){
         });
     }
     
-    // Xử lý khi thay đổi role
     $('#role_id').on('change', function(){
         var role_id = $(this).val();
         loadRolePermissions(role_id);
     });
 
-    // Nếu có role_id từ URL parameter (chế độ edit)
     @if (!empty($role_id))
-        // Load permissions cho role này
         loadRolePermissions({{ $role_id }});
     @endif
 });

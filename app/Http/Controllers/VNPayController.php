@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\BookingItem;
 use App\Models\Ticket;
+use App\Models\TicketType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -139,7 +140,6 @@ class VNPayController extends Controller
                     $cart = $orderInfo['cart'] ?? [];
                     $totalAmount = $request->vnp_Amount / 100;
                     
-                    // Nhóm các vé theo event_id
                     $eventGroups = [];
                     foreach ($cart as $item) {
                         $eventId = $item['event_id'] ?? $item['eventId'] ?? null;
@@ -177,14 +177,22 @@ class VNPayController extends Controller
                         ]);
 
                         foreach ($group['items'] as $item) {
+                            $ticketTypeId = $item['ticketId'] ?? null;
+                            $ticketType = TicketType::findOrFail($ticketTypeId);
+                            $quantityAvailable = $ticketType->quantity_total - $ticketType->quantity_sold;
+                            if ($item['quantity'] > $quantityAvailable) {
+                                throw new \Exception("Không đủ số lượng vé. Còn lại: {$quantityAvailable}");
+                            }
+                            
                             $bookingItem = BookingItem::create([
                                 'booking_id' => $booking->id,
-                                'ticket_type_id' => $item['ticketId'] ?? $item['ticketId'] ?? null,
+                                'ticket_type_id' => $ticketTypeId,
                                 'quantity' => $item['quantity'],
                                 'unit_price' => $item['price'],
                             ]);
 
-                            // Tạo từng vé riêng lẻ với mã QR
+                            $ticketType->increment('quantity_sold', $item['quantity']);
+                            
                             for ($i = 1; $i <= $item['quantity']; $i++) {
                                 $ticketCode = $this->generateTicketCode($booking->booking_code, $i);
                                 $qrCode = $this->generateQRCode($ticketCode);
@@ -192,7 +200,7 @@ class VNPayController extends Controller
                                 Ticket::create([
                                     'ticket_code' => $ticketCode,
                                     'booking_id' => $booking->id,
-                                    'ticket_type_id' => $item['ticketId'] ?? $item['ticketId'] ?? null,
+                                    'ticket_type_id' => $ticketTypeId,
                                     'attendee_name' => $orderInfo['fullName'] ?? '',
                                     'qr_code' => $qrCode,
                                     'status' => 'active',

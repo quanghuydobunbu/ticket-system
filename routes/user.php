@@ -21,4 +21,5 @@ Route::get('/payment/success', [VNPayController::class, 'success'])->name('payme
 Route::get('/payment/failed', [VNPayController::class, 'failed'])->name('payment.failed');
 
 Route::get('/my-ticket', [HomeController::class, 'my_ticket'])->name('my-ticket');
-
+Route::get('/my-tickets/{id}', [HomeController::class, 'show'])->name('my-tickets.show');
+ Route::get('/my-tickets/{id}/download', [HomeController::class, 'download'])->name('my-tickets.download');

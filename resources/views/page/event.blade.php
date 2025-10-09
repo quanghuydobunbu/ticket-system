@@ -107,7 +107,7 @@
                     <div class="event-card-content p-6">
                         <div class="flex items-center justify-between mb-3">
                             <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                {{ $event->category->name }}
+                                {{ $event->category->name ?? ''}}
                             </span>
                             <span class="text-sm text-gray-500">
                                 {{ $event->start_datetime ? \Carbon\Carbon::parse($event->start_datetime)->locale('vi')->translatedFormat('d-m-Y') : 'TBA' }}
@@ -119,7 +119,7 @@
                         
                         <div class="flex items-center mb-4 text-sm text-gray-600">
                             <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
-                            <span class="truncate">{{ $event->venue->name }}</span>
+                            <span class="truncate">{{ $event->venue->name ?? ''}}</span>
                         </div>
                         
                         @if($event->start_datetime)
