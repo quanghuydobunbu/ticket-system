@@ -66,7 +66,7 @@ class EventController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to create user: ' . $e->getMessage());
+                ->with('error', 'Failed to create event: ' . $e->getMessage());
         }
     }
 
@@ -90,7 +90,9 @@ class EventController extends Controller
         $event = $this->eventService->findEvent($id);
         $organizers = $this->eventService->getAllOrganizer();
         $categories = $this->eventService->getAllCategory();
-        return view('admin.event.edit')->with('event', $event)->with('organizers', $organizers)->with('categories', $categories);
+        $venues = $this->eventService->getAllVenue();
+        return view('admin.event.edit')->with('event', $event)->with('organizers', $organizers)->with('categories', $categories)
+        ->with('venues', $venues);
     }
 
     /**

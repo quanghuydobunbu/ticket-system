@@ -10,6 +10,8 @@ use App\Repositories\EventRepository;
 use App\Repositories\EventRepositoryInterface;
 use App\Repositories\HomeRepository;
 use App\Repositories\HomeRepositoryInterface;
+use App\Repositories\PermissionRepository;
+use App\Repositories\PermissionRepositoryInterface;
 use App\Repositories\TicketRepository;
 use App\Repositories\TicketRepositoryInterface;
 use App\Repositories\TicketTypeRepository;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(HomeRepositoryInterface::class, HomeRepository::class);
         $this->app->bind(BookingRepositoryInterface::class, BookingRepository::class);
         $this->app->bind(TicketRepositoryInterface::class, TicketRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
     }
 
     /**

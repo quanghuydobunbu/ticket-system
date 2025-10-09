@@ -16,14 +16,14 @@
               <i class="bi bi-circle"></i><span>Quản lý người dùng</span>
             </a>
           </li>
-          {{-- <li>
-            <a href="components-accordion.html">
-              <i class="bi bi-circle"></i><span>Quản lý vai trò</span>
-            </a>
-          </li> --}}
           <li>
             <a href="{{ route('role_premissions.index') }}">
               <i class="bi bi-circle"></i><span>Phân quyền cho vai trò</span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('permissions.index') }}">
+              <i class="bi bi-circle"></i><span>Quản lý quyền truy cập</span>
             </a>
           </li>
         </ul>
