@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index(){
+        if(!HasPermission(Auth::user(), 'admin.dashboard')) {
+            abort(403);
+        }
         $monthlySales = DB::table('ticket_types')
             ->selectRaw('
                 MONTH(created_at) as month,
@@ -48,7 +52,6 @@ class DashboardController extends Controller
     {
         $currentYear = date('Y');
         
-        // Thống kê tổng số sự kiện theo tháng
         $totalEvents = Event::select(
             DB::raw('MONTH(start_datetime) as month'),
             DB::raw('COUNT(*) as count')
@@ -58,7 +61,6 @@ class DashboardController extends Controller
         ->pluck('count', 'month')
         ->toArray();
 
-        // Thống kê sự kiện đã hoàn thành
         $completedEvents = Event::select(
             DB::raw('MONTH(start_datetime) as month'),
             DB::raw('COUNT(*) as count')
@@ -69,7 +71,6 @@ class DashboardController extends Controller
         ->pluck('count', 'month')
         ->toArray();
 
-        // Thống kê sự kiện bị hủy
         $cancelledEvents = Event::select(
             DB::raw('MONTH(start_datetime) as month'),
             DB::raw('COUNT(*) as count')
@@ -80,7 +81,6 @@ class DashboardController extends Controller
         ->pluck('count', 'month')
         ->toArray();
 
-        // Thống kê sự kiện đã publish (đang diễn ra hoặc sắp diễn ra)
         $publishedEvents = Event::select(
             DB::raw('MONTH(start_datetime) as month'),
             DB::raw('COUNT(*) as count')
@@ -91,7 +91,6 @@ class DashboardController extends Controller
         ->pluck('count', 'month')
         ->toArray();
 
-        // Tạo mảng dữ liệu đầy đủ cho 12 tháng
         $statistics = [
             'total' => [],
             'completed' => [],
@@ -109,7 +108,6 @@ class DashboardController extends Controller
         return $statistics;
     }
 
-    // API endpoint để lấy dữ liệu JSON (nếu cần)
     public function getStatisticsJson()
     {
         $statistics = $this->getEventStatistics();
@@ -118,7 +116,6 @@ class DashboardController extends Controller
 
     public function getUserStatusStats()
     {
-        // Đếm số người dùng active và inactive
         $activeUsers = User::where('is_active', '1')->count();
         $inactiveUsers = User::where('is_active', '0')->count();
         

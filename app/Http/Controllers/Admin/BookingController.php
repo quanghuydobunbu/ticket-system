@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -15,6 +16,9 @@ class BookingController extends Controller
 
     public function index(Request $request)
     {
+        if(!HasPermission(Auth::user(), 'bookings.index')) {
+            abort(403);
+        }
         $filters = [
             'search' => $request->get('search'),
             'status' => $request->get('status')

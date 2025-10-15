@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Repositories\BookingRepository;
 use App\Repositories\BookingRepositoryInterface;
 use App\Repositories\CategoryRepository;
@@ -22,10 +24,12 @@ use App\Repositories\VenueRepository;
 use App\Repositories\VenueRepositoryInterface;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+        
     /**
      * Register any application services.
      */
@@ -50,5 +54,40 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         date_default_timezone_set('Asia/Ho_Chi_Minh');
         Carbon::setLocale('vi');
+
+        Gate::before(function (User $user, string $ability) {
+            if (HasPermission($user, $ability)) {
+                return true;
+            }
+            return null;
+        });
+
+        // Gate::define('users.index', function (User $user) {
+        //     return HasPermission($user, 'users.index');
+        // });
+
+        // Gate::define('events.index', function (User $user) {
+        //     return HasPermission($user, 'events.index');
+        // });
+
+        // Gate::define('tickets.index', function (User $user) {
+        //     return HasPermission($user, 'tickets.index');
+        // });
+
+        // Gate::define('ticket_types.index', function (User $user) {
+        //     return HasPermission($user, 'ticket_types.index');
+        // });
+
+        // Gate::define('bookings.index', function (User $user) {
+        //     return HasPermission($user, 'bookings.index');
+        // });
+
+        // Gate::define('venues.index', function (User $user) {
+        //     return HasPermission($user, 'venues.index');
+        // });
+
+        // Gate::define('categories.index', function (User $user) {
+        //     return HasPermission($user, 'categories.index');
+        // });
     }
 }

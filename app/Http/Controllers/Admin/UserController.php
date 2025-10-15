@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -22,6 +25,9 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
+        if(!Gate::allows('users.index')){
+            abort(403);
+        }
         $filters = [
             'search' => $request->get('search'),
             'status' => $request->get('status')
@@ -40,6 +46,9 @@ class UserController extends Controller
      */
     public function create(): View
     {
+        if(!Gate::allows('users.create')){
+            abort(403);
+        }
         $roles = $this->userService->getAllRoles();
         return view('admin.user.add', compact('roles'));
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Venue;
 use App\Services\VenueService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class VenueController extends Controller
@@ -16,6 +17,9 @@ class VenueController extends Controller
     }
     public function index(Request $request)
     {
+        if(!HasPermission(Auth::user(), 'venues.index')) {
+            abort(403);
+        }
         $filters = [
             'search' => $request->get('search'),
             'status' => $request->get('status')

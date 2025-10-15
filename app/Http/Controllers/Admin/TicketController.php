@@ -21,6 +21,9 @@ class TicketController extends Controller
     }
     public function index()
     {
+        if(!HasPermission(Auth::user(), 'tickets.index')) {
+            abort(403);
+        }
         $ticketTypes = $this->ticketService->getTicketType();
         $tickets = Ticket::paginate(10);
 
