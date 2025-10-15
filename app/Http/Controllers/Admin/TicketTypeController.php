@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\TicketType;
 use App\Services\TicketTypeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TicketTypeController extends Controller
 {
@@ -19,6 +20,9 @@ class TicketTypeController extends Controller
     }
     public function index(Request $request)
     {
+        if(!HasPermission(Auth::user(), 'ticket_types.index')) {
+            abort(403);
+        }
         $filters = [
             'search' => $request->get('search'),
             'status' => $request->get('status')

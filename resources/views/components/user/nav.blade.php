@@ -9,10 +9,18 @@
                 
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Trang chủ</a>
-                        <a href="{{ route('event') }}" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Sự kiện</a>
-                        {{-- <a href="#support" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Hỗ trợ</a> --}}
-                        <a href="{{ route('my-ticket') }}" class="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">Vé của tôi</a>
+                        <a href="{{ route('dashboard') }}" 
+                        class="{{ request()->routeIs('dashboard') ? 'text-primary-600 font-bold' : 'text-gray-600 hover:text-primary-600' }} px-3 py-2 rounded-md text-sm font-medium">
+                            Trang chủ
+                        </a>
+                        <a href="{{ route('event') }}" 
+                        class="{{ request()->routeIs('event') ? 'text-primary-600 font-bold' : 'text-gray-600 hover:text-primary-600' }} px-3 py-2 rounded-md text-sm font-medium">
+                            Sự kiện
+                        </a>
+                        <a href="{{ route('my-ticket') }}" 
+                        class="{{ request()->routeIs('my-ticket') ? 'text-primary-600 font-bold' : 'text-gray-600 hover:text-primary-600' }} px-3 py-2 rounded-md text-sm font-medium">
+                            Vé của tôi
+                        </a>
                     </div>
                 </div>
                 

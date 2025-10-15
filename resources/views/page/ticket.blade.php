@@ -2,7 +2,6 @@
 
 @section('content')
 
-<!-- Page Header -->
 <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-4xl font-bold mb-2">Vé của tôi</h1>
@@ -10,14 +9,12 @@
     </div>
 </section>
 
-<!-- Filter Tabs -->
 <section class="bg-white border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        
     </div>
 </section>
 
-<!-- Tickets List -->
 <section class="py-12 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if(isset($tickets) && $tickets->count() > 0)
@@ -104,7 +101,6 @@
                 @endforeach
             </div>
         @else
-            <!-- Empty State -->
             <div id="emptyState" class="text-center py-16">
                 <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-200 rounded-full mb-6">
                     <i class="fas fa-ticket-alt text-gray-400 text-4xl"></i>
@@ -120,7 +116,6 @@
     </div>
 </section>
 
-<!-- Ticket Detail Modal với Multiple QR Codes -->
 <div id="ticketModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 py-8">
         <div class="bg-white rounded-xl max-w-4xl w-full">
@@ -134,7 +129,6 @@
             </div>
             
             <div class="p-8">
-                <!-- Event Details -->
                 <div class="grid md:grid-cols-2 gap-6 mb-8 pb-6 border-b">
                     <div class="space-y-4">
                         <div class="flex items-start">
@@ -177,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- Individual Tickets with QR Codes -->
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 mb-4">
                         <i class="fas fa-ticket-alt mr-2"></i>Danh sách vé

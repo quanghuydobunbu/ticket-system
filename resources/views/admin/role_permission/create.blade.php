@@ -92,10 +92,7 @@
     </div>
   </section>
 
-@endsection
-
-@section('scripts')
-<script>
+  <script>
 $(document).ready(function(){
     // Hàm load permissions cho role
     function loadRolePermissions(role_id) {
@@ -144,4 +141,6 @@ $(document).ready(function(){
     @endif
 });
 </script>
+
 @endsection
+

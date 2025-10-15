@@ -49,6 +49,7 @@ class HomeController extends Controller
         // Lấy tất cả bookings của user hiện tại với các quan hệ cần thiết
         $query = Booking::with([
             'event:id,title,start_datetime,featured_image',
+            'event.venue',
             'bookingDetails.ticketType:id,name,price',
             'tickets'
         ])
@@ -81,9 +82,8 @@ class HomeController extends Controller
             $ticketType = $firstDetail ? $firstDetail->ticketType : null;
             $totalQuantity = $booking->bookingDetails ? $booking->bookingDetails->sum('quantity') : 0;
             
-            // Safely get first ticket
             $firstTicket = $booking->tickets->first();
-            
+            $booking->load('event.venue');
             return [
                 'id' => $booking->id,
                 'booking_code' => $booking->booking_code,
@@ -92,7 +92,8 @@ class HomeController extends Controller
                 'ticketCode' => $firstTicket ? $firstTicket->ticket_code : $booking->booking_code,
                 'date' => $booking->event ? $booking->event->start_datetime : null,
                 'time' => $booking->event ? $booking->event->start_datetime : null,
-                'location' => $booking->event->venue ? $booking->event->venue->name : 'N/A',
+                // 'location' => $booking->event->venue ? $booking->event->venue->name : 'N/A',
+                'location' => $booking->event?->venue?->name ?? 'N/A',
                 'quantity' => $totalQuantity,
                 'price' => $booking->final_amount ?? 0,
                 'status' => $this->mapTicketStatus($booking),

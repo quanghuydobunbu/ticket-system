@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Services\EventService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -15,6 +16,9 @@ class EventController extends Controller
     }
     public function index(Request $request)
     {
+        if(!HasPermission(Auth::user(), 'events.index')) {
+            abort(403);
+        }
         $filters = [
             'search' => $request->get('search'),
             'status' => $request->get('status')

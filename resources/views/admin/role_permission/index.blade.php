@@ -73,20 +73,7 @@
               </div>
             </div>
             <div class="card-footer bg-white py-3">
-              <!-- Có thể thêm phân trang ở đây -->
-              <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-end mb-0">
-                  <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
-                  </li>
-                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">Sau</a>
-                  </li>
-                </ul>
-              </nav>
+                {{-- {{ $grouped_role_has_permission->links() }} --}}
             </div>
           </div>
         </div>

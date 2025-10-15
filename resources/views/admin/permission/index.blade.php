@@ -84,31 +84,7 @@
               </div>
             </div>
             <div class="card-footer bg-white py-3">
-              @if ($permissions->hasPages())
-                <div class="pagination-container">
-                    <ul class="pagination">
-                        @if ($permissions->onFirstPage())
-                            <li><a href="#"><i class="fas fa-angle-double-left"></i></a></li>
-                        @else
-                            <li><a href="{{ $permissions->previousPageUrl() }}"><i class="fas fa-angle-double-left"></i></a></li>
-                        @endif
-
-                        @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
-                            @if ($page == $permissions->currentPage())
-                                <li><a href="#" class="active">{{ $page }}</a></li>
-                            @else
-                                <li><a href="{{ $url }}">{{ $page }}</a></li>
-                            @endif
-                        @endforeach
-
-                        @if ($permissions->hasMorePages())
-                            <li><a href="{{ $permissions->nextPageUrl() }}"><i class="fas fa-angle-double-right"></i></a></li>
-                        @else
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i></a></li>
-                        @endif
-                    </ul>
-                </div>
-            @endif
+              {{ $permissions->links() }}
             </div>
           </div>
         </div>

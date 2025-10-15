@@ -18,9 +18,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title">Danh sách người dùng</h5>
-                        <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-circle"></i> Thêm người dùng
-                        </a>
+                        @can('users.create')
+                            <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-circle"></i> Thêm người dùng
+                            </a>
+                        @endcan
                     </div>
 
                     <!-- Search and Filter Form -->

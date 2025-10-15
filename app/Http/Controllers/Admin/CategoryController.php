@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -15,6 +16,9 @@ class CategoryController extends Controller
     }
     public function index()
     {
+        if(!HasPermission(Auth::user(), 'categories.index')) {
+            abort(403);
+        }
         $categories = $this->categoryService->getAllCategory();
         return view('admin.category.index')->with('categories', $categories);
     }
